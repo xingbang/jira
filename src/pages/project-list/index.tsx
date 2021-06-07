@@ -18,8 +18,8 @@ const List = (props: any) => {
     return (<div>
         {
             state.name ? <div>
-                登录成功，用户名：{state.name}
-                token: {state.token}
+                登录成功，用户名：{state.name} <br/>
+                token: <span style={{wordBreak: 'break-all'}}>{state.token}</span>
             </div> : null
         }
     </div>)
