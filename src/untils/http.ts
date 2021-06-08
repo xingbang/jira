@@ -1,13 +1,13 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getToken } from './auth'
 
-const service = axios.create({
+const request = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   timeout: 6000
 })
 
 // 请求拦截器
-service.interceptors.request.use((config: AxiosRequestConfig) => {
+request.interceptors.request.use((config: AxiosRequestConfig) => {
   if (getToken('SET_TOKEN')) {
     config.headers['Authorization'] = 'Bearer ' + getToken('SET_TOKEN')
   }
@@ -19,7 +19,7 @@ service.interceptors.request.use((config: AxiosRequestConfig) => {
 })
 
 // 响应拦截器
-service.interceptors.response.use((response: AxiosResponse) => {
+request.interceptors.response.use((response: AxiosResponse) => {
   return response
 }, error => {
   error.data = {}
@@ -27,5 +27,5 @@ service.interceptors.response.use((response: AxiosResponse) => {
   return Promise.resolve(error)
 })
 
-export default service
+export default request
 

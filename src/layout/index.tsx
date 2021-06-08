@@ -21,7 +21,7 @@ const LayoutDefault = (props: any) => {
   }
 
   return (
-    <Layout className="layout-main">
+    <Layout className="layout-main" style={{height: 'auto', minHeight: '100vh'}}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="layout-tit" >管理系统</div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
