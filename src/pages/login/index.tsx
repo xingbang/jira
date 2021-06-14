@@ -1,9 +1,9 @@
 import React, { FormEvent } from 'react'
 import { Layout, Form, Input, Button, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { login } from '../../untils/auth'
+import { login } from '../../utils/auth'
 import { useAuth } from '../../context/auth-context'
-import * as auth from '../../untils/auth'
+import * as auth from '../../utils/auth'
 
 import './index.less'
 

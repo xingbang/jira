@@ -1,5 +1,5 @@
 import React, { useReducer, ReactNode } from 'react'
-import * as auth from '../untils/auth'
+import * as auth from '../utils/auth'
 // import { useHistory } from 'react-router-dom'
 // useHistory().push()
 

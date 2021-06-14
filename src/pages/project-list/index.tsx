@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useReducer } from 'react'
-import { Select, Table, Button, Modal, Form, Input } from 'antd'
-import { useAuth } from '../../context/auth-context'
-import { getBootHot, getBook } from './../../api/book'
-import { render } from '@testing-library/react';
-
-const { Option } = Select
+import React, { useEffect, useReducer } from 'react'
+import { message, Select, Table, Button, Modal, Form, Input } from 'antd'
+// import { useAuth } from '../../context/auth-context'
+import { getBootHot, creatHotBook, deleteHotBook } from './../../api/book'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { useAsync } from '../../utils/useAsync'
 
 const apiUrl = process.env.REACT_APP_API_URL
 
@@ -13,14 +12,12 @@ const List = (props: any) => {
     // let history = props.history
 
     const initState = {
+        isQuery: '',
         isModalVisible: false,
-        loading: false,
-        listData: [],
         selectData: [],
-        count: 1,   // 数据总数
         listQuery: {
             page: 1,   // 当前页数
-            limit: 2,  // 每页条数
+            limit: 10,  // 每页条数
         },
         temp: {
             id: '',
@@ -30,67 +27,64 @@ const List = (props: any) => {
             image: ''
         }
     }
-    const reducer = (state: any, action: any) =>  {
-        switch(action.type) {
+    const reducer = (state: any, action: any) => {
+        switch (action.type) {
             case 'success':
                 return {
                     ...state,
                     ...action.payload
                 }
-            default: 
+            default:
                 return state;
         }
     }
 
     const [state, dispatch] = useReducer(reducer, initState)
 
-    const { listQuery, loading, listData, count, isModalVisible, selectData } = state
-    
+    const { isQuery, listQuery, isModalVisible, selectData } = state
+
+    const [form] = Form.useForm();
+
+    const { run, isLoading, data: list } = useAsync<any>()
+
+
     useEffect(() => {
-        // console.log(state)
-        // if(!state.name) {
-        //     history.push('/login')
-        // }
+        run(getBootHot(listQuery)).then(res => {
+            console.log(res)
+        })
+    }, [listQuery, isModalVisible, isQuery])
+
+    // add
+    const handleAdd = () => {
         dispatch({
             type: 'success',
             payload: {
-                loading: true
+                isModalVisible: true
             }
         })
+    }
 
-        getBootHot(listQuery).then((res: any) => {
-            dispatch({
-                type: 'success',
-                payload: {
-                    loading: false,
-                    listData: res.data.result,
-                    count: res.data.meta?.total
-                }
-            })
-            
+    const handleCancel = () => {
+        dispatch({
+            type: 'success',
+            payload: {
+                isModalVisible: false
+            }
         })
-
-    }, [listQuery])
-
-    
-
-    const children = [];
-    for (let i = 10; i < 36; i++) {
-        children.push(<Option key={i.toString(36) + i} value={i.toString(36) + i}>{i.toString(36) + i}</Option>);
     }
 
-    const handleChange = (value: any) => {
-        console.log(`selected [${value}]`);
-    }
-
-    const handleSearch = (value: string) => {
-        let params = {
-            q: value,
-            start: 1,
-            count: 20
-        }
-        getBook(params).then((res: any) => {
-            console.log(res)
+    const handleOk = () => {
+        creatHotBook(form.getFieldsValue()).then((res: any) => {
+            if (res.data.error_code === 0) {
+                // success
+                message.success(res.data.msg);
+                dispatch({
+                    type: 'success',
+                    payload: {
+                        isModalVisible: false
+                    }
+                })
+            }
         })
     }
 
@@ -105,7 +99,31 @@ const List = (props: any) => {
                 }
             }
         })
-        
+
+    }
+
+    const deleteRow = (index: number): void => {
+        Modal.confirm({
+            title: 'Confirm',
+            icon: <ExclamationCircleOutlined />,
+            content: '确认删除这条数据？',
+            okText: '确认',
+            cancelText: '取消',
+            onOk() {
+                deleteHotBook(index).then(res => {
+                    if (res.data.error_code === 0) {
+                        // success
+                        message.success(res.data.msg);
+                        dispatch({
+                            type: 'success',
+                            payload: {
+                                isQuery: res.data.request
+                            }
+                        })
+                    }
+                })
+            },
+        });
     }
 
     const columns = [
@@ -129,17 +147,29 @@ const List = (props: any) => {
             dataIndex: 'count'
         },
         {
-          title: '封面',
-          dataIndex: 'image',
-          render: (_: any, render: any) => {
-           return (
-            <>
-                <img src={render.image} style={{width: '40px'}} />
-            </>
-           )
-          }
+            title: '封面',
+            dataIndex: 'image',
+            render: (_: any, render: any) => {
+                return (
+                    <>
+                        <img src={render.image} style={{ width: '40px' }} />
+                    </>
+                )
+            }
 
         },
+        {
+            title: '操作',
+            dataIndex: 'opeartion',
+            render: (_: any, render: any) => {
+                return (
+                    <>
+                        <a onClick={() => { deleteRow(render.index) }}>删除</a>
+                    </>
+                )
+            }
+
+        }
     ]
 
     const options = selectData.map((d: any) => <Select.Option key={d.id} value={d.title}>{d.title}</Select.Option>);
@@ -151,62 +181,60 @@ const List = (props: any) => {
                 token: <span style={{wordBreak: 'break-all'}}>{state.token}</span>
             </div> : null
         } */}
-    
-    <Button type="primary">新增</Button>
-    <Select mode="tags" showArrow style={{minWidth: '150px', width: 'auto' }} placeholder="请选择（多选）" onChange={handleChange}>
-        {children}
-    </Select>
-    <Table 
-        rowKey="id"
-        loading={loading}
-        columns={columns} 
-        dataSource={listData} 
-        pagination ={{ 
-            total: count, 
-            current: listQuery.page, 
-            pageSize: listQuery.limit,
-            onChange: onChange, 
-            pageSizeOptions: ['2', '4', '5'],
-            showSizeChanger: true, 
-            showQuickJumper: true
-        }} 
-        style={{
-            paddingTop: '24px'
-        }}
-        
-    />
-    <Modal title="Basic Modal" visible={isModalVisible}>
-        <Form>
-            <Form.Item
-                label="图书名称"
-                name="title"
-                rules={[{ required: true}]}
-            >
-                <Select 
-                    showSearch
-                    onSearch={handleSearch}
-                    onChange={handleChange}
-                    placeholder="请输入图书名称或作者" >
-                    {options}
-                </Select>
-            </Form.Item>
-            <Form.Item
-                label="图书作者"
-                name="author"
-                rules={[{ required: true }]}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item
-                label="缩略图"
-                name="image"
-                rules={[{ required: true, message: 'Please input your username!' }]}
-            >
-                {/* <img src={temp.image} height="100"/> */}
-            </Form.Item>
-        </Form>
-    </Modal>
- 
+
+        <Button type="primary" onClick={handleAdd}>新增</Button>
+        <Table
+            rowKey="id"
+            loading={isLoading}
+            columns={columns}
+            dataSource={list?.data.result || []}
+            pagination={{
+                total: list?.data.meta.total || 0,
+                current: listQuery.page,
+                pageSize: listQuery.limit,
+                onChange: onChange,
+                pageSizeOptions: ['10', '20', '30'],
+                showSizeChanger: true,
+                showQuickJumper: true
+            }}
+            style={{
+                paddingTop: '24px'
+            }}
+
+        />
+        <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+            <Form form={form}>
+                <Form.Item
+                    label="图书id"
+                    name="id"
+                    rules={[{ required: true }]}
+                >
+                    <Input placeholder="请输入图书id" />
+                </Form.Item>
+                <Form.Item
+                    label="图书名称"
+                    name="title"
+                    rules={[{ required: true }]}
+                >
+                    <Input placeholder="请输入图书名称" />
+                </Form.Item>
+                <Form.Item
+                    label="图书作者"
+                    name="author"
+                    rules={[{ required: true }]}
+                >
+                    <Input placeholder="请输入图书作者" />
+                </Form.Item>
+                <Form.Item
+                    label="缩略图"
+                    name="image"
+                    rules={[{ required: true, message: 'Please input your username!' }]}
+                >
+                    <Input placeholder="请输入封面url" />
+                </Form.Item>
+            </Form>
+        </Modal>
+
     </div>)
 }
 

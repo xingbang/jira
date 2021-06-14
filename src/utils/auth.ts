@@ -1,4 +1,4 @@
-import service from '../untils/http'
+import service from './http'
 
 const apiUrl = process.env.REACT_APP_API_URL
 

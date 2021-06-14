@@ -1,4 +1,4 @@
-import request from '../untils/http'
+import request from '../utils/http'
 // 获取图书列表
 // http://t.yushu.im/v2/book/search?q=%s&start=%s&count=%s&summary=%s
 export function getBook (params) {
@@ -10,8 +10,8 @@ export function getBook (params) {
 }
 
 // 获取热门图书列表
-export function getBootHot (params) {
-  return request({
+export const getBootHot = async (params) => {
+  return await request({
     url: process.env.REACT_APP_API_URL + '/api/v1/book/hot_list',
     method: 'get',
     params
