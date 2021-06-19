@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export const isFalsy = (value: any) => value === 0 ? false : !value
 
@@ -44,6 +44,22 @@ export const subset = <
         keys.includes(key as K)
     )
     return Object.fromEntries(filteredEntries) as Pick<O, K>;;
+}
+
+/**
+ * 返回组建在挂载状态，如果还没挂载或者已经卸载，返回false；反之，返回true
+ */
+export const useMountedRef = () => {
+    const mountedRef = useRef(false)
+
+    useEffect(() => {
+        mountedRef.current = true
+        return () => {
+            mountedRef.current = false
+        }
+    })
+
+    return mountedRef
 }
 
 
