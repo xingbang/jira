@@ -1,5 +1,5 @@
 // 处理异步请求状态
-import { useState } from "react";
+import { useReducer, useCallback } from "react";
 import { useMountedRef } from "./index";
 
 interface State<D> {
@@ -14,48 +14,68 @@ const defaultInitialState: State<null> = {
   error: null,
 };
 
-export const useAsync = <D>(initialState?: State<D>) => {
-  const [state, setState] = useState<State<D>>({
-    ...defaultInitialState,
-    ...initialState,
-  });
-
+const useSafeDispatch = <T>(dispatch: (...arg: T[]) => void) => {
   const mountedRef = useMountedRef();
+  return useCallback(
+    (...args: T[]) => {
+      mountedRef.current ? dispatch(...args) : void 0;
+    },
+    [dispatch, mountedRef]
+  );
+};
 
-  const setData = (data: D) => {
-    setState({
-      data,
-      status: "success",
-      error: null,
-    });
-  };
+export const useAsync = <D>(initialState?: State<D>) => {
+  const [state, dispatch] = useReducer(
+    (state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }),
+    {
+      ...defaultInitialState,
+      ...initialState,
+    }
+  );
 
-  const setError = (error: Error) => {
-    setState({
-      error,
-      status: "error",
-      data: null,
-    });
-  };
+  const safeDispatch = useSafeDispatch(dispatch);
+
+  const setData = useCallback(
+    (data: D) => {
+      safeDispatch({
+        data,
+        status: "success",
+        error: null,
+      });
+    },
+    [safeDispatch]
+  );
+
+  const setError = useCallback(
+    (error: Error) => {
+      safeDispatch({
+        error,
+        status: "error",
+        data: null,
+      });
+    },
+    [safeDispatch]
+  );
 
   // 触发异步函数
-  const run = (promise: Promise<D>) => {
-    if (!promise || !promise.then) {
-      throw new Error("请传入Promise类型数据");
-    }
-    setState({ ...state, status: "loading" });
-    return promise
-      .then((data) => {
-        if (mountedRef.current) {
+  const run = useCallback(
+    (promise: Promise<D>) => {
+      if (!promise || !promise.then) {
+        throw new Error("请传入Promise类型数据");
+      }
+      safeDispatch({ status: "loading" });
+      return promise
+        .then((data) => {
           setData(data);
-        }
-        return data;
-      })
-      .catch((error) => {
-        setError(error);
-        return error;
-      });
-  };
+          return data;
+        })
+        .catch((error) => {
+          setError(error);
+          return error;
+        });
+    },
+    [safeDispatch, setData, setError]
+  );
 
   return {
     isIdle: state.status === "idle",

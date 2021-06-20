@@ -52,7 +52,7 @@ const List = (props: any) => {
         run(getBootHot(listQuery)).then(res => {
             console.log(res)
         })
-    }, [listQuery, isModalVisible, isQuery])
+    }, [listQuery, isModalVisible, isQuery, run])
 
     // add
     const handleAdd = () => {
