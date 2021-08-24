@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react'
+import React from 'react'
 import { Layout, Form, Input, Button, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { login } from '../../utils/auth'
@@ -7,11 +7,11 @@ import * as auth from '../../utils/auth'
 
 import './index.less'
 
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
 
 const Login = (props: any) => {
   
-  const { state, dispath } = useAuth()
+  const { dispath } = useAuth()
 
   const onFinish = (value: any) => {
     console.log(value)

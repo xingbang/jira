@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer } from 'react'
-import { message, Select, Table, Button, Modal, Form, Input } from 'antd'
+import { message, Table, Button, Modal, Form, Input } from 'antd'
 // import { useAuth } from '../../context/auth-context'
 import { getBootHot, creatHotBook, deleteHotBook } from './../../api/book'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useAsync } from '../../utils/useAsync'
 
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
 
 const List = (props: any) => {
     // const { state } = useAuth()
@@ -41,7 +41,7 @@ const List = (props: any) => {
 
     const [state, dispatch] = useReducer(reducer, initState)
 
-    const { isQuery, listQuery, isModalVisible, selectData } = state
+    const { isQuery, listQuery, isModalVisible } = state
 
     const [form] = Form.useForm();
 
@@ -172,7 +172,7 @@ const List = (props: any) => {
         }
     ]
 
-    const options = selectData.map((d: any) => <Select.Option key={d.id} value={d.title}>{d.title}</Select.Option>);
+    // const options = selectData.map((d: any) => <Select.Option key={d.id} value={d.title}>{d.title}</Select.Option>);
 
     return (<div>
         {/* {
