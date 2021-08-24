@@ -152,7 +152,7 @@ const List = (props: any) => {
             render: (_: any, render: any) => {
                 return (
                     <>
-                        <img src={render.image} style={{ width: '40px' }} />
+                        <img alt='' src={render.image} style={{ width: '40px' }} />
                     </>
                 )
             }
