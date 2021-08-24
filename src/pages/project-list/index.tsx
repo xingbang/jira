@@ -164,7 +164,7 @@ const List = (props: any) => {
             render: (_: any, render: any) => {
                 return (
                     <>
-                        <a onClick={() => { deleteRow(render.index) }}>删除</a>
+                        <div onClick={() => { deleteRow(render.index) }}>删除</div>
                     </>
                 )
             }
