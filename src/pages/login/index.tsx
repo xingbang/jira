@@ -10,17 +10,17 @@ import './index.less'
 // const apiUrl = process.env.REACT_APP_API_URL
 
 const Login = (props: any) => {
-  
+
   const { dispath } = useAuth()
 
   const onFinish = (value: any) => {
     console.log(value)
-    const {account, secret} = value
+    const { account, secret } = value
     // event.preventDefault()
     // const account = (event.currentTarget.elements[0] as HTMLInputElement).value
     // const secret = (event.currentTarget.elements[1] as HTMLInputElement).value
-    login({account, secret}).then(() => {
-      dispath({ 
+    login({ account, secret }).then(() => {
+      dispath({
         type: 'success',
         payload: {
           name: auth.getToken('SET_NAME'),
@@ -59,7 +59,7 @@ const Login = (props: any) => {
             <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />
           </Form.Item>
           <Form.Item name="remember" valuePropName="checked">
-            <Checkbox style={{color: '#fff'}}>记住我</Checkbox>
+            <Checkbox style={{ color: '#fff' }}>记住我</Checkbox>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" className="login-button">登录</Button>

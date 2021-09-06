@@ -52,7 +52,7 @@ const List = (props: any) => {
         run(getBootHot(listQuery)).then(res => {
             console.log(res)
         })
-    }, [listQuery, isModalVisible, isQuery, run])
+    }, [listQuery, isQuery, run])
 
     // add
     const handleAdd = () => {
@@ -74,17 +74,19 @@ const List = (props: any) => {
     }
 
     const handleOk = () => {
-        creatHotBook(form.getFieldsValue()).then((res: any) => {
-            if (res.data.error_code === 0) {
-                // success
-                message.success(res.data.msg);
-                dispatch({
-                    type: 'success',
-                    payload: {
-                        isModalVisible: false
-                    }
-                })
-            }
+        form.validateFields().then((values) => {
+            creatHotBook(values).then((res: any) => {
+                if (res.data.error_code === 0) {
+                    // success
+                    message.success(res.data.msg);
+                    dispatch({
+                        type: 'success',
+                        payload: {
+                            isModalVisible: false
+                        }
+                    })
+                }
+            })
         })
     }
 
@@ -110,14 +112,14 @@ const List = (props: any) => {
             okText: '确认',
             cancelText: '取消',
             onOk() {
-                deleteHotBook(index).then(res => {
+                deleteHotBook(index).then((res: any) => {
                     if (res.data.error_code === 0) {
                         // success
                         message.success(res.data.msg);
                         dispatch({
                             type: 'success',
                             payload: {
-                                isQuery: res.data.request
+                                isQuery: res.request
                             }
                         })
                     }
@@ -164,7 +166,7 @@ const List = (props: any) => {
             render: (_: any, render: any) => {
                 return (
                     <>
-                        <div onClick={() => { deleteRow(render.index) }}>删除</div>
+                        <Button type="link" onClick={() => { deleteRow(render.index) }}>删除</Button>
                     </>
                 )
             }
@@ -184,6 +186,7 @@ const List = (props: any) => {
 
         <Button type="primary" onClick={handleAdd}>新增</Button>
         <Table
+            size="small"
             rowKey="id"
             loading={isLoading}
             columns={columns}
@@ -202,8 +205,12 @@ const List = (props: any) => {
             }}
 
         />
-        <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-            <Form form={form}>
+        <Modal title="新增图书" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+            <Form
+                labelCol={{ span: 4 }}
+                wrapperCol={{ span: 20 }}
+                form={form}
+            >
                 <Form.Item
                     label="图书id"
                     name="id"
@@ -228,7 +235,7 @@ const List = (props: any) => {
                 <Form.Item
                     label="缩略图"
                     name="image"
-                    rules={[{ required: true, message: 'Please input your username!' }]}
+                    rules={[{ required: true }]}
                 >
                     <Input placeholder="请输入封面url" />
                 </Form.Item>
