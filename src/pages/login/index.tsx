@@ -27,7 +27,7 @@ const Login = (props: any) => {
           token: auth.getToken('SET_TOKEN')
         }
       });
-      props.history.push('/list')
+      props.history.push('/user')
     })
   }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from 'react'
 import { message, Table, Button, Modal, Form, Input } from 'antd'
 // import { useAuth } from '../../context/auth-context'
-import { getBootHot, creatHotBook, deleteHotBook } from './../../api/book'
+import { getBootHot, creatHotBook, deleteHotBook } from '../../api/book'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useAsync } from '../../utils/useAsync'
 

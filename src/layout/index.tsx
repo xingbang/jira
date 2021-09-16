@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import { Layout, Menu, Breadcrumb, ConfigProvider } from 'antd'
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined, MailOutlined } from '@ant-design/icons'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import zhCN from 'antd/lib/locale/zh_CN'
 import { Routes } from '../routes'
@@ -12,6 +8,7 @@ import { Routes } from '../routes'
 import './index.less'
 
 const { Header, Sider, Content, Footer } = Layout
+const { SubMenu } = Menu
 
 const LayoutDefault = (props: any) => {
   const [collapsed, setCollapsed] = useState(false)
@@ -21,15 +18,21 @@ const LayoutDefault = (props: any) => {
     setCollapsed(!collapsed)
   }
 
+  const handleClick = (e: any) => {
+    console.log('click ', e);
+    props.history.push(`/${e.key}`)
+  };
+
   return (
     <ConfigProvider locale={zhCN}>
       <Layout className="layout-main" style={{ height: 'auto', minHeight: '100vh' }}>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="layout-tit" >管理系统</div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              用户列表
-            </Menu.Item>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['user']} onClick={handleClick} >
+            <SubMenu key="books" icon={<MailOutlined />} title="书籍">
+              <Menu.Item key="hotBook">热门书籍</Menu.Item>
+            </SubMenu>
+            <Menu.Item key="user">用户列表</Menu.Item>
           </Menu>
         </Sider>
         <Layout className="site-layout">

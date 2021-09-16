@@ -1,5 +1,6 @@
 import { Login } from '../pages'
-import { List } from '../pages'
+import { HotBook } from '../pages'
+import { User } from '../pages'
 
 export type RouterType = {
   path: string,
@@ -13,16 +14,22 @@ const LoginRouter: RouterType = {
   component: Login,
   name: '登录'
 }
-const ListRouter: RouterType = {
-  path: '/list',
-  component: List,
+const HotBookRouter: RouterType = {
+  path: '/hotBook',
+  component: HotBook,
+  name: '热门图书'
+}
+const UserRouter: RouterType = {
+  path: '/user',
+  component: User,
   name: '用户列表'
 }
 
 // 总路由
 const Routes: RouterType[] = ([
   LoginRouter,
-  ListRouter
+  HotBookRouter,
+  UserRouter
 ])
 
 export {
